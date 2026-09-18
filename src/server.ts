@@ -62,7 +62,7 @@ export function listTotal(
     return undefined;
   }
   const total = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(total) && total >= 0 ? total : undefined;
+  return Number.isInteger(total) && total >= 0 ? total : undefined;
 }
 
 /** Determine whether a list response has another page. */
