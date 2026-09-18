@@ -19,40 +19,33 @@ alt="Meshery Logo" width="50%" /></picture></a></p>
 
 # mesheryctl-axi
 
-Agent-ergonomic [AXI](https://axi.md/) wrapper around [`mesheryctl`](https://docs.meshery.io/reference/mesheryctl). Prefer this over raw `mesheryctl` for agent workflows: token-efficient **TOON** list/view reporting, definitive empty states, structured errors, `help[]` next-step suggestions, and always-non-interactive execution.
+Agent-ergonomic [AXI](https://axi.md/) wrapper around [`mesheryctl`](https://docs.meshery.io/reference/mesheryctl). Prefer this over raw `mesheryctl` for agent workflows: token-efficient [**TOON**](https://toonformat.dev/) list/view reporting, definitive empty states, structured errors, `help[]` next-step suggestions, and always-non-interactive execution.
 
-It follows the [`gh-axi`](https://github.com/kunchenguid/gh-axi) pattern: it wraps the human CLI instead of changing it. Design and scope: [meshery/meshery#20979](https://github.com/meshery/meshery/issues/20979).
+Reporting in [TOON](https://toonformat.dev/) — a token-efficient serialization for tabular data — is a founding reason this wrapper exists: agents spend most of their Meshery tokens reading repeated list/view output, so the wrapper reshapes that reporting while leaving design and model content in canonical YAML/JSON.
 
-Current pre-release usage runs directly from the source checkout:
 
-```bash
-make setup
-make dev
-```
+_The original design and scope [meshery/meshery#20979](https://github.com/meshery/meshery/issues/20979) follows the [`gh-axi`](https://github.com/kunchenguid/gh-axi) pattern by wrapping the human CLI instead of changing it._
 
-After the first npm release, the equivalent package command will be:
+## How to Use
+
+To use:
 
 ```bash
 npx -y mesheryctl-axi
 ```
 
-## Project status
-
-**Pre-release (v0.x).** The package structure, error contract, TOON rendering, and release pipeline are in place. List commands use the authenticated Meshery Server API while `mesheryctl` list output remains human-oriented; view and content commands continue to use the CLI's supported structured output. [#12](https://github.com/meshery-extensions/mesheryctl-axi/issues/12) tracks everything left before the first npm release. Issues labelled [`good first issue`](https://github.com/meshery-extensions/mesheryctl-axi/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22good%20first%20issue%22) are a good place to start.
-
-## Prerequisites
+### Prerequisites
 
 - **Node.js >= 22**
 - **`mesheryctl` installed and authenticated.** This package spawns `mesheryctl`; it does not embed Meshery.
   - Install: https://docs.meshery.io/installation
   - Override the binary: `MESHERYCTL_BIN=/path/to/mesheryctl`
 
-## Agent quickstart
+### Agent quickstart
 
-Use this sequence when setting up an agent or preparing a machine for an agent
-to operate Meshery.
+Use this sequence when setting up an agent or preparing a machine for an agent to operate Meshery.
 
-### 1. Prepare the environment
+#### 1. Prepare the environment
 
 Before starting, confirm that:
 
@@ -80,7 +73,7 @@ The wrapper reads the active context and token from the normal `mesheryctl`
 configuration. If the configuration is stored elsewhere, set `MESHERY_CONFIG`
 or `MESHERYCTL_CONFIG` to its `config.yaml` path.
 
-### 2. Start with the content-first home
+#### 2. Start with the content-first home
 
 During pre-release development, make the no-argument source command the
 agent's first call:
@@ -123,7 +116,7 @@ suggestion for `system context`. `system context` reads the active context
 directly and returns `name`, `endpoint`, `token`, `platform`, and `channel`
 fields followed by a suggestion for `system status`.
 
-### 3. Use reporting and content commands correctly
+#### 3. Use reporting and content commands correctly
 
 List commands query the Meshery Server API using the endpoint and token from the
 active context. They do not scrape tables or pass unsupported JSON flags to
@@ -145,8 +138,8 @@ must not be interpreted as empty results.
 
 | Output | Contract |
 | --- | --- |
-| List, view, system, and error reporting | TOON for concise agent use |
-| `design content` and `model content` | Raw YAML or JSON; never TOON-wrapped content |
+| List, view, system, and error reporting | [TOON](https://toonformat.dev/) for concise agent use |
+| `design content` and `model content` | Raw YAML or JSON; never [TOON](https://toonformat.dev/)-wrapped content |
 | Empty collections | A definitive count such as `connections: 0` |
 | List aggregates | Current-page `count`, source `total` when available, and a connection status breakdown |
 | Field control | `--fields <field,...>` selects known fields; `--full` uses the full known schema |
@@ -158,7 +151,7 @@ are `VALIDATION_ERROR`, `AUTH_REQUIRED`, `NOT_FOUND`,
 `MESHERYCTL_NOT_INSTALLED`, `MESHERYCTL_INCOMPATIBLE`, and `UNKNOWN`.
 `VALIDATION_ERROR` exits with code 2; other structured errors exit with code 1.
 
-### 4. Add the agent instruction
+#### 4. Add the agent instruction
 
 Paste this into the repository's `AGENTS.md`, `CLAUDE.md`, or equivalent agent
 instructions:
@@ -172,16 +165,19 @@ list, view, system, and error output as TOON; preserve `design content` and
 empty; an error or unavailable field does not.
 ```
 
-## Quick start
+## Contributing
 
-The package is not yet published to npm. Run these commands from the source
-checkout during pre-release development:
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md), and sign off your commits ([DCO](https://docs.meshery.io/project/contributing#signing-off-on-commits-developer-certificate-of-origin)). New to Meshery? Start with the [Newcomers' Guide](https://layer5.io/community/newcomers) and say hello in the [community Slack](https://slack.meshery.io).
+
+List commands use the authenticated Meshery Server API while `mesheryctl` list output remains human-oriented; view and content commands continue to use the CLI's supported structured output. [#12](https://github.com/meshery-extensions/mesheryctl-axi/issues/12) tracks everything left before the first npm release. Issues labelled [`good first issue`](https://github.com/meshery-extensions/mesheryctl-axi/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22good%20first%20issue%22) are a good place to start.
+
+Run these commands from the source checkout during pre-release development:
 
 ```bash
 # Content-first home: description, bin path, best-effort system status/context
 make dev
 
-# TOON list/view reporting
+# TOON (https://toonformat.dev/) list/view reporting
 make dev ARGS="connection list"
 make dev ARGS="system status"
 make dev ARGS="system context"
@@ -189,23 +185,23 @@ make dev ARGS="design list"
 make dev ARGS="model list"
 make dev ARGS="component list"
 
-# Schema-faithful content retrieval (YAML/JSON - never TOON-as-content)
+# Schema-faithful content retrieval (YAML/JSON - never TOON-as-content; see https://toonformat.dev/)
 make dev ARGS="design content <name> --format yaml"
 make dev ARGS="model content <name> --format json"
 ```
 
-## Design notes
+### Design notes
 
 | Concern | Behavior |
 | --- | --- |
-| List / view / system metadata | TOON |
+| List / view / system metadata | [TOON](https://toonformat.dev/) |
 | Design / model **content** | Raw YAML or JSON only; no `help[]` suffix |
-| Unknown flags | Non-zero exit + structured TOON error |
+| Unknown flags | Non-zero exit + structured [TOON](https://toonformat.dev/) error |
 | Empty results | Definitive empty states (e.g. `connections: 0`) |
 | Reporting success | Includes contextual `help[]` suggestions |
 | Interactivity | Always non-interactive (no TTY prompts) |
 
-## Commands (v1)
+### Commands (v1)
 
 ```
 mesheryctl-axi                        # home
@@ -216,7 +212,7 @@ mesheryctl-axi model list|view|content
 mesheryctl-axi component list|view
 ```
 
-## Development
+### Development
 
 ```bash
 make setup    # npm ci
@@ -227,15 +223,29 @@ make dev ARGS="connection list"   # run from source
 
 CI ([`node-checks.yml`](.github/workflows/node-checks.yml)) builds, tests, smoke-runs the built bin, and dry-runs `npm pack` on Node.js 22 and 24.
 
-## Releasing
+The unit tests mock `mesheryctl`; the contract suite checks the real thing.
+Every argv the wrapper sends to the binary is centralized in argv builders
+(`*ViewArgv` in `src/commands/`) and enumerated in `src/contract.ts`, and
+[`mesheryctl-contract.yml`](.github/workflows/mesheryctl-contract.yml) installs
+the latest `mesheryctl` release and asserts each subcommand exists and accepts
+its flags — on every PR and weekly. Run it locally with a real binary:
+
+```bash
+MESHERYCTL_BIN=/path/to/mesheryctl MESHERYCTL_CONTRACT=1 npm run test -- test/contract
+```
+
+### Releasing
 
 Releases are automation-driven: merged PRs update a Release Drafter draft, and publishing that draft publishes `mesheryctl-axi` to npm. Never `npm publish` by hand. See [`docs/release-procedure.md`](docs/release-procedure.md); agents use the [`mesheryctl-axi-release`](.agents/skills/mesheryctl-axi-release/SKILL.md) skill.
 
-## Contributing
+Package locations:
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md), and sign off your commits ([DCO](https://docs.meshery.io/project/contributing#signing-off-on-commits-developer-certificate-of-origin)). New to Meshery? Start with the [Newcomers' Guide](https://layer5.io/community/newcomers) and say hello in the [community Slack](https://slack.meshery.io).
+- [npm package page](https://www.npmjs.com/package/mesheryctl-axi)
+- [npm registry metadata](https://registry.npmjs.org/mesheryctl-axi)
 
-Security issues: see [SECURITY.md](SECURITY.md).
+### Security
+
+Vulnerability reporting: see [SECURITY.md](SECURITY.md).
 
 ## License
 

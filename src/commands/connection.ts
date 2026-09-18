@@ -73,6 +73,14 @@ const viewSchema: FieldDef[] = [
   field("updated_at", "updated"),
 ];
 
+/**
+ * argv the wrapper sends to `mesheryctl connection view`.
+ * Exported so the mesheryctl contract suite can check it against a real binary.
+ */
+export function connectionViewArgv(id: string, format: string): string[] {
+  return ["connection", "view", id, "--output-format", format];
+}
+
 function normalizeConnection(
   item: Record<string, unknown>,
 ): Record<string, unknown> {
@@ -189,13 +197,7 @@ async function viewConnection(args: string[]): Promise<string> {
   }
 
   // view supports --output-format on released mesheryctl
-  const payload = await mesheryctlJson([
-    "connection",
-    "view",
-    id,
-    "--output-format",
-    "json",
-  ]);
+  const payload = await mesheryctlJson(connectionViewArgv(id, "json"));
   const item = normalizeConnection(asObject(payload));
   return renderOutput([
     renderDetail("connection", item, schema),

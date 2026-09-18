@@ -53,6 +53,14 @@ const viewSchema: FieldDef[] = [
   field("apiVersion", "api_version"),
 ];
 
+/**
+ * argv the wrapper sends to `mesheryctl component view`.
+ * Exported so the mesheryctl contract suite can check it against a real binary.
+ */
+export function componentViewArgv(name: string, format: string): string[] {
+  return ["component", "view", name, "--output-format", format];
+}
+
 function normalizeComponent(
   item: Record<string, unknown>,
 ): Record<string, unknown> {
@@ -124,13 +132,7 @@ async function viewComponent(args: string[]): Promise<string> {
       "VALIDATION_ERROR",
     );
   }
-  const payload = await mesheryctlJson([
-    "component",
-    "view",
-    name,
-    "--output-format",
-    "json",
-  ]);
+  const payload = await mesheryctlJson(componentViewArgv(name, "json"));
   return renderOutput([
     renderDetail("component", normalizeComponent(asObject(payload)), schema),
     renderHelp(getSuggestions({ domain: "component", action: "view" })),
