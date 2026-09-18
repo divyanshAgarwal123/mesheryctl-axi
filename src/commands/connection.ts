@@ -122,19 +122,29 @@ async function listConnections(args: string[]): Promise<string> {
   const total = listTotal(payload);
   const sourceSummary = payload["statusSummary"] ?? payload["status_summary"];
   const summary: Record<string, number> = {};
+  // The server summary is usable only when every entry is a non-negative
+  // integer count; a mixed or fractional summary falls back to row statuses
+  // so valid rows are never silently dropped.
+  let sourceSummaryValid = false;
   if (
     sourceSummary &&
     typeof sourceSummary === "object" &&
     !Array.isArray(sourceSummary)
   ) {
-    for (const [status, value] of Object.entries(sourceSummary)) {
-      const count = typeof value === "number" ? value : Number(value);
-      if (Number.isFinite(count) && count >= 0) {
-        summary[status.toLowerCase()] = count;
+    const entries = Object.entries(sourceSummary).map(([status, value]) => ({
+      status: status.toLowerCase(),
+      count: typeof value === "number" ? value : Number(value),
+    }));
+    sourceSummaryValid =
+      entries.length > 0 &&
+      entries.every(({ count }) => Number.isInteger(count) && count >= 0);
+    if (sourceSummaryValid) {
+      for (const { status, count } of entries) {
+        summary[status] = count;
       }
     }
   }
-  if (Object.keys(summary).length === 0) {
+  if (!sourceSummaryValid) {
     for (const item of items) {
       const status = item["status"];
       if (typeof status === "string" && status.length > 0) {

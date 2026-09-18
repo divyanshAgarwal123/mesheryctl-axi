@@ -98,6 +98,35 @@ describe("connection list via Server API", () => {
     expect(out).toContain("discovered: 2");
   });
 
+  it("falls back to row statuses when a source summary mixes valid and invalid entries", async () => {
+    setServerAuth(fakeAuth);
+    setServerFetcher(async () =>
+      jsonResponse({
+        connections: [
+          { id: "c1", status: "CONNECTED" },
+          { id: "c2", status: "CONNECTED" },
+        ],
+        statusSummary: { connected: 6, bogus: "n/a" },
+      }),
+    );
+
+    const out = await connectionCommand(["list"]);
+    expect(out).toContain("status:\n  connected: 2");
+  });
+
+  it("falls back to row statuses when a source summary has fractional counts", async () => {
+    setServerAuth(fakeAuth);
+    setServerFetcher(async () =>
+      jsonResponse({
+        connections: [{ id: "c1", status: "CONNECTED" }],
+        statusSummary: { connected: 1.5 },
+      }),
+    );
+
+    const out = await connectionCommand(["list"]);
+    expect(out).toContain("status:\n  connected: 1");
+  });
+
   it("falls back to row statuses when a source summary is empty", async () => {
     setServerAuth(fakeAuth);
     setServerFetcher(async () =>
