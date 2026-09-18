@@ -57,6 +57,13 @@ export function selectFields(
         .filter(Boolean),
     ),
   ];
+  if (requested.length === 0) {
+    throw new AxiError(
+      "--fields requires a comma-separated value",
+      "VALIDATION_ERROR",
+      [`Valid fields: ${valid.join(", ")}`],
+    );
+  }
   const unknown = requested.filter((name) => !valid.includes(name));
   if (unknown.length > 0) {
     throw new AxiError(
