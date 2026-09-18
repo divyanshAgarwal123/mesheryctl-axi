@@ -34,4 +34,16 @@ describe("field selection", () => {
       selectFields(args, compact, full, "connection list"),
     ).toThrowError(expect.objectContaining({ code: "VALIDATION_ERROR" }));
   });
+
+  it("includes valid fields when a normalized field list is empty", () => {
+    try {
+      selectFields(["--fields=,,,"], compact, full, "connection list");
+      expect.fail("should throw");
+    } catch (error) {
+      expect(error).toMatchObject({
+        code: "VALIDATION_ERROR",
+        suggestions: ["Valid fields: id, name, created"],
+      });
+    }
+  });
 });
