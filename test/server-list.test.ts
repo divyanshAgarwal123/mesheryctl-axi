@@ -7,6 +7,8 @@ describe("list pagination metadata", () => {
     expect(listTotal({ total_count: 6 })).toBe(6);
     expect(listTotal({ total: "5" })).toBe(5);
     expect(listTotal({ totalCount: null })).toBeUndefined();
+    expect(listTotal({ totalCount: 7.5 })).toBeUndefined();
+    expect(listTotal({ total_count: "7.5" })).toBeUndefined();
   });
 
   it("suggests a next page only for a full page with more results", () => {
