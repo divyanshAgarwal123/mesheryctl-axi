@@ -114,6 +114,22 @@ describe("connection list via Server API", () => {
     expect(out).toContain("status:\n  connected: 2");
   });
 
+  it("falls back to row statuses when a source summary has non-numeric counts", async () => {
+    setServerAuth(fakeAuth);
+    setServerFetcher(async () =>
+      jsonResponse({
+        connections: [
+          { id: "c1", status: "CONNECTED" },
+          { id: "c2", status: "DISCOVERED" },
+        ],
+        statusSummary: { connected: true, discovered: null },
+      }),
+    );
+
+    const out = await connectionCommand(["list"]);
+    expect(out).toContain("status:\n  connected: 1\n  discovered: 1");
+  });
+
   it("falls back to row statuses when a source summary has fractional counts", async () => {
     setServerAuth(fakeAuth);
     setServerFetcher(async () =>

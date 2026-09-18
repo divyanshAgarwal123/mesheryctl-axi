@@ -139,9 +139,16 @@ async function listConnections(args: string[]): Promise<string> {
     typeof sourceSummary === "object" &&
     !Array.isArray(sourceSummary)
   ) {
+    // Accept only numbers and non-empty numeric strings: booleans, null,
+    // and arrays coerce to 0/1 via Number() and must not pass validation.
     const entries = Object.entries(sourceSummary).map(([status, value]) => ({
       status: status.toLowerCase(),
-      count: typeof value === "number" ? value : Number(value),
+      count:
+        typeof value === "number"
+          ? value
+          : typeof value === "string" && value.trim() !== ""
+            ? Number(value)
+            : NaN,
     }));
     sourceSummaryValid =
       entries.length > 0 &&
